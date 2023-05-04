@@ -24,7 +24,7 @@ The goal is predict the the probability distribution of how a set of downs will 
 
 The following 19 states will be used to categorize how a set of downs will conclude. 
 
-![image](C:\Users\andrew.charabin\Downloads\absorption_states.png)
+![image](./images/absorption_states.png)
 
 # Downs as layers
 
@@ -40,11 +40,11 @@ Because an absorption state can occur in any down 1-4, absorption states will al
 
 The final layer (4) only contains the 19 absorption states. A softmax activation function is used to ensure the model estimates the multi-class probability distribution of absorption states. 
 
-![image](C:\Users\andrew.charabin\Downloads\generalizedstates.png)
+![image](./images/generalizedstates.png)
 
 # Dataset 
 
-(NFL play-by-play data from 2009-2018)[https://www.kaggle.com/datasets/maxhorowitz/nflplaybyplay2009to2016?resource=download] is used to train the model. 
+[NFL play-by-play data from 2009-2018](https://www.kaggle.com/datasets/maxhorowitz/nflplaybyplay2009to2016?resource=download) is used to train the model. 
 
 # Libraries
 
@@ -70,5 +70,5 @@ A prediction function is developed that intakes the yardline, yards to go, down,
 One should note the possibility for circular applications. There are 10 possible absorption states where the drive continues, each distinguishing different yardlines.
 The initial prediction will provide the probability distribution of each of these states. However, each of these predicted states can also be fed into the model a subsequent time as they have an associated down (1), yardline, and yards to go (10 or more if the yardline decreased). An average duration of seconds passed per down can be considered for the seconds remaining feature. In accordance, the model can be applied iteratively and the associated chains of conditional probabilities can be summed to predict the absorption state probability distribution for a drive. 
 
-Please see the jupyter notebook for further information on model performance and details. 
+Please see the [jupyter notebook](https://github.com/acharabin/NFL-Down-Set-Outcome-Prediction/NFL-Down-Set-Outcome-Prediction.ipynb) for further information on model details and performance. 
 
