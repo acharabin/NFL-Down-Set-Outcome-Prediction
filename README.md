@@ -2,7 +2,7 @@
 
 The purpose of this repo is to provide an approach to predict the outcome distribution of a set of NFL downs using neural networks. More specifically, doing so by applying an architecture and training procedure which can estimate the underlying markov process at work, circumventing the inherint sample size and dimensionality limitations when using historical state-to-state transition data. 
 
-## Markov Process
+## Markov process
 
 A markov chain is a process whereby the next state only (t) depends on the preceding state (t-1) and is independant of any earlier states (i.e. t-2). This is a useful model of NFL downs which can be considered as states in a process. For example; if a team has the ball 10 yards away from the opposing team's goal line, to predict the liklihood of the team getting a touchdown in the drive, it's not pertinent that ball possession had just been attained after a fumble. 
 
@@ -26,7 +26,7 @@ The following 19 states will be used to categorize how a set of downs will concl
 
 ![image](./img/absorption_states.png)
 
-# Downs as layers
+## Downs as layers
 
 However, we have yet to consider what the current down is (i.e. 1st or 2nd) and it's impact on the probability distribution of absorption states. 
 
@@ -42,15 +42,15 @@ Because an absorption state can occur in any down 1-4, absorption states will al
 
 The final layer (4) only contains the 19 absorption states. A softmax activation function is used to ensure the model estimates the multi-class probability distribution of absorption states. 
 
-# Dataset 
+## Dataset 
 
 [NFL play-by-play data from 2009-2018](https://www.kaggle.com/datasets/maxhorowitz/nflplaybyplay2009to2016?resource=download) is used to train the model. 
 
-# Libraries
+## Libraries
 
 The neural network including forward and backward propogation steps are built 'from scratch' using Python's numpy library for full flexibility in the training and prediction procedure. 
 
-# Training Procedure
+## Training Procedure
 
 A teacher-forcing procedure is used to ensure the model recognizes the intented state structure. The procedure is as follows:
 
@@ -63,7 +63,7 @@ A teacher-forcing procedure is used to ensure the model recognizes the intented 
 
 The procedure can be repeated for further training, omitting steps 3 and 5. 
 
-# Prediction Procedure
+## Prediction Procedure
 
 A prediction function is developed that intakes the yardline, yards to go, down, and seconds remaining in the half, and provides the absorption state probability distribution. Within the function, yardline and yards to go are 'vectorized', multiplied, and unrolled. Similar to the training procedure, input data that indicated the 4th down is passed into the 3rd layer to get a prediction. 
 
