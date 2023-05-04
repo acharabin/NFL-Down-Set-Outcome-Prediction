@@ -24,7 +24,7 @@ The goal is predict the the probability distribution of how a set of downs will 
 
 The following 19 states will be used to categorize how a set of downs will conclude. 
 
-![image](./absorption_states.png)
+![image](./img/absorption_states.png)
 
 # Downs as layers
 
@@ -34,13 +34,13 @@ To do so we will 'unroll' the previous 10 x 11 matrix of states horizonally into
 
 We then make 4 stacks of this large feature vector and position them in a sequence, each stack being considered a down. 
 
+![image](./img/generalizedstates.png)
+
 The stacks will be consider as layers in a dense neural network. In the initial pass, a linear formula followed by a RELU activation will be used to map the current layers state to the probability* distribution of all states in the next layer (down). 
 
 Because an absorption state can occur in any down 1-4, absorption states will also be considered in the feature stack for layers 1-3. This means that the total number of dimensions in these stacks is 10 yardlines x 11 yeards to go + 1 time feature + 19 absorption states (130). You'll see that layer 0 represents the 1st down; this is because this stack is only used for input data and not for model computations which start in the 1st layer. 
 
 The final layer (4) only contains the 19 absorption states. A softmax activation function is used to ensure the model estimates the multi-class probability distribution of absorption states. 
-
-![image](./generalizedstates.png)
 
 # Dataset 
 
@@ -52,14 +52,14 @@ The neural network including forward and backward propogation steps are built 'f
 
 # Training Procedure
 
-A teacher-forcing procedure is used to ensure the model recognized the intented state structure. The procedure is as follows:
+A teacher-forcing procedure is used to ensure the model recognizes the intented state structure. The procedure is as follows:
 
-1. Down 4 data is considered as input featurs and fed into the 3rd layer stack to predict the absorption probability distribution (layer 4).
-2. Down 3 data is considered as input featurs and fed into the 2nd layer stack to predict the absorption probability distribution (layer 4).
+1. Down 4 data is considered as input features and fed into the 3rd layer stack to predict the absorption probability distribution (layer 4).
+2. Down 3 data is considered as input features and fed into the 2nd layer stack to predict the absorption probability distribution (layer 4).
 3. Down 2 (layer 1) weights and bias terms are initialized with those estimated for down 3. 
-4. Down 2 data is considered as input featurs and fed into the 1st layer stack to predict the absorption probability distribution (layer 4). 
+4. Down 2 data is considered as input features and fed into the 1st layer stack to predict the absorption probability distribution (layer 4). 
 5. Down 1 (layer 0) weights and bias terms are initialized with those estimated for down 2. 
-6. Down 1 data is considered as input featurs and fed into the 0th layer stack to predict the absorption probability distribution (layer 4). 
+6. Down 1 data is considered as input features and fed into the 0th layer stack to predict the absorption probability distribution (layer 4). 
 
 The procedure can be repeated for further training, omitting steps 3 and 5. 
 
@@ -67,8 +67,7 @@ The procedure can be repeated for further training, omitting steps 3 and 5.
 
 A prediction function is developed that intakes the yardline, yards to go, down, and seconds remaining in the half, and provides the absorption state probability distribution. Within the function, yardline and yards to go are 'vectorized', multiplied, and unrolled. Similar to the training procedure, input data that indicated the 4th down is passed into the 3rd layer to get a prediction. 
 
-One should note the possibility for circular applications. There are 10 possible absorption states where the drive continues, each distinguishing different yardlines.
-The initial prediction will provide the probability distribution of each of these states. However, each of these predicted states can also be fed into the model a subsequent time as they have an associated down (1), yardline, and yards to go (10 or more if the yardline decreased). An average duration of seconds passed per down can be considered for the seconds remaining feature. In accordance, the model can be applied iteratively and the associated chains of conditional probabilities can be summed to predict the absorption state probability distribution for a drive. 
+One should note the possibility for circular applications. There are 10 possible absorption states where the drive continues, each distinguishing different yardlines. The initial prediction will provide the probability distribution across each of these states. However, these predicted states can also be fed into the model a subsequent time as they have an associated down (1), yardline, and yards to go (10 or more if the yardline decreased). An average duration of seconds passed per down can be considered for the seconds remaining feature. In accordance, the model can be applied iteratively and the associated chains of conditional probabilities can be summed to predict the absorption state probability distribution for a drive. 
 
 Please see the [jupyter notebook](https://github.com/acharabin/NFL-Down-Set-Outcome-Prediction/blob/main/NFL-Down-Set-Outcome-Prediction.ipynb) for further information on model details and performance. 
 
