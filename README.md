@@ -70,5 +70,5 @@ A prediction function is developed that intakes the yardline, yards to go, down,
 One should note the possibility for circular applications. There are 10 possible absorption states where the drive continues, each distinguishing different yardlines.
 The initial prediction will provide the probability distribution of each of these states. However, each of these predicted states can also be fed into the model a subsequent time as they have an associated down (1), yardline, and yards to go (10 or more if the yardline decreased). An average duration of seconds passed per down can be considered for the seconds remaining feature. In accordance, the model can be applied iteratively and the associated chains of conditional probabilities can be summed to predict the absorption state probability distribution for a drive. 
 
-Please see the [jupyter notebook](https://github.com/acharabin/NFL-Down-Set-Outcome-Prediction/NFL-Down-Set-Outcome-Prediction.ipynb) for further information on model details and performance. 
+Please see the [jupyter notebook](https://github.com/acharabin/NFL-Down-Set-Outcome-Prediction/blob/main/NFL-Down-Set-Outcome-Prediction.ipynb) for further information on model details and performance. 
 
