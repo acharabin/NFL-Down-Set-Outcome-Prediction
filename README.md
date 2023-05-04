@@ -24,7 +24,7 @@ The goal is predict the the probability distribution of how a set of downs will 
 
 The following 19 states will be used to categorize how a set of downs will conclude. 
 
-![image](./images/absorption_states.png)
+![image](./absorption_states.png)
 
 # Downs as layers
 
@@ -40,7 +40,7 @@ Because an absorption state can occur in any down 1-4, absorption states will al
 
 The final layer (4) only contains the 19 absorption states. A softmax activation function is used to ensure the model estimates the multi-class probability distribution of absorption states. 
 
-![image](./images/generalizedstates.png)
+![image](./generalizedstates.png)
 
 # Dataset 
 
