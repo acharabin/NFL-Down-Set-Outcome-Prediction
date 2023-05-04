@@ -14,7 +14,7 @@ Given the yardline and yards to go are continuous quantities, binning is require
 
 We can then visualize a football field with the yardline representing the length of the field. But to depict the various markov states, we can represent the width of the field with the yards to go to reach a first down.  
 
-![image](https://user-images.githubusercontent.com/122898165/236083069-ff31d74a-ce98-429d-916f-6b336647829e.png)
+![image](./img/yardlinebyydstogo.png)
 
 Because there are 10 yardline and 11 yards to go buckets, this will be a 10 X 11 matrix resulting in 110 states. 
 
