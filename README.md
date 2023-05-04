@@ -30,7 +30,7 @@ The following 19 states will be used to categorize how a set of downs will concl
 
 However, we have yet to consider what the current down is (i.e. 1st or 2nd) and it's impact on the probability distribution of absorption states. 
 
-To do so we will 'unroll' the previous 10 x 11 matrix of states horizonally into a vector, after which we will add an additional feature - the number of seconds remaining in the half. The design allows for the inclusion of additional features in the future like team embeddings, historical performance, and weather.
+To do so we will 'unroll' the previous 10 x 11 matrix of states vertically into a vector, after which we will add an additional feature - the number of seconds remaining in the half. The design allows for the inclusion of additional features in the future like team embeddings, historical performance, and weather.
 
 We then make 4 vertical stacks of this large feature vector and position them in a sequence, each stack being considered a down. Note that as before, within each 10 yard line buckets represented by colour, there are 11 yards to go buckets contained inside. 
 
