@@ -229,7 +229,7 @@ def linear_activation_forward(A_prev, W, b, activation):
 
     return A, cache
 
-def L_model_forward(X, parameters, last_layer_activation, down):
+def L_model_forward(X, parameters, inner_layer_activation, last_layer_activation, down, single_layer_training=False):
     """
     Implement forward propagation for the [LINEAR->RELU]*(L-1)->LINEAR->last_layer_activation computation
     
@@ -246,13 +246,17 @@ def L_model_forward(X, parameters, last_layer_activation, down):
 
     caches = []
     A = X
-    L = len(parameters) // 2                  # number of layers in the neural network
+    if not single_layer_training:
+        L = len(parameters) // 2                  # number of layers in the neural network
+    else:
+        L = down
     
-    # The for loop starts at 1 because layer 0 is the input
-    for l in range(down, L):
-        A_prev = A 
-        A, cache = linear_activation_forward(A_prev, parameters['W'+str(l)], parameters['b'+str(l)], 'relu')
-        caches.append(cache)
+    if not single_layer_training:
+        # The for loop starts at 1 because layer 0 is the input
+        for l in range(down, L):
+            A_prev = A 
+            A, cache = linear_activation_forward(A_prev, parameters['W'+str(l)], parameters['b'+str(l)], inner_layer_activation)
+            caches.append(cache)
         
     AL, cache = linear_activation_forward(A, parameters['W'+str(L)], parameters['b'+str(L)], last_layer_activation)
     caches.append(cache)
@@ -275,11 +279,15 @@ def compute_cost(AL, Y, last_layer_activation):
     
         m = Y.shape[1]
 
-        cost = -np.mean(np.multiply(Y,np.log(AL)) + np.multiply(1-Y,np.log(1-AL)),axis=1,keepdims=True)
+        cost = -np.mean(np.mean(np.multiply(Y,np.log(AL)) + np.multiply(1-Y,np.log(1-AL)),axis=0,keepdims=True),axis=1,keepdims=True)
         
     elif last_layer_activation == 'softmax':
 
         cost = np.mean(np.sum(np.multiply(Y,np.log(AL)),axis=0,keepdims=True),axis=1,keepdims=True)
+
+    elif last_layer_activation == 'relu':
+
+        cost = np.mean(np.sum((Y-AL)**2,axis=0,keepdims=True),axis=1,keepdims=True)
 
     cost = np.squeeze(cost)      # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).
 
@@ -337,7 +345,7 @@ def linear_activation_backward(dA, cache, activation):
 
     return dA_prev, dW, db
 
-def L_model_backward(AL, Y, caches, last_layer_activation, L, down):
+def L_model_backward(AL, Y, caches, inner_layer_activation, last_layer_activation, L, down, single_layer_training=False):
     """
     Implement the backward propagation for the [LINEAR->RELU] * (L-1) -> LINEAR -> SIGMOID group
     
@@ -371,6 +379,10 @@ def L_model_backward(AL, Y, caches, last_layer_activation, L, down):
         # dZ = AL - Y
         dA_prev_temp, dW_temp, db_temp = linear_activation_backward(dAL,current_cache,'softmax')
 
+    elif last_layer_activation=='relu':
+        raise Exception('relu yet to be supported')
+        dA_prev_temp, dW_temp, db_temp = linear_activation_backward(dAL,current_cache,'relu')
+
     grads["dA" + str(L-1)] = dA_prev_temp
     grads["dW" + str(L)] = dW_temp
     grads["db" + str(L)] = db_temp
@@ -384,17 +396,18 @@ def L_model_backward(AL, Y, caches, last_layer_activation, L, down):
     #     grads["dW" + str(l + 1)] = dW_temp
     #     grads["db" + str(l + 1)] = db_temp
 
-    for l in reversed(range(down,L)):
+    if not single_layer_training:
+        for l in reversed(range(down,L)):
 
-        current_cache = caches[-(down-l)]
-        dA_prev_temp, dW_temp, db_temp = linear_activation_backward(grads["dA" + str(l)],current_cache,'relu')
-        grads["dA" + str(l-1)] = dA_prev_temp
-        grads["dW" + str(l)] = dW_temp
-        grads["db" + str(l)] = db_temp
+            current_cache = caches[-(down-l)]
+            dA_prev_temp, dW_temp, db_temp = linear_activation_backward(grads["dA" + str(l)],current_cache,inner_layer_activation)
+            grads["dA" + str(l-1)] = dA_prev_temp
+            grads["dW" + str(l)] = dW_temp
+            grads["db" + str(l)] = db_temp
 
     return grads
 
-def update_parameters(params, grads, learning_rate, down):
+def update_parameters(params, grads, learning_rate, down, single_layer_training):
     """
     Update parameters using gradient descent
     
@@ -408,7 +421,11 @@ def update_parameters(params, grads, learning_rate, down):
                   parameters["b" + str(l)] = ...
     """
     parameters = params.copy()
-    L = len(parameters) // 2 # number of layers in the neural network
+
+    if not single_layer_training:
+        L = len(parameters) // 2                  # number of layers in the neural network
+    else:
+        L = down
 
     for l in range(down, L+1):
 
@@ -417,7 +434,7 @@ def update_parameters(params, grads, learning_rate, down):
         
     return parameters
 
-def predict(X, Y, parameters, last_layer_activation, down, return_probs = True):
+def predict(X, Y, parameters, inner_layer_activation, last_layer_activation, down, return_probs = True):
     """
     This function is used to predict the results of a  L-layer neural network.
     
@@ -448,7 +465,7 @@ def predict(X, Y, parameters, last_layer_activation, down, return_probs = True):
         P = np.zeros((parameters['W4'].shape[0],m))
     
     # Forward propagation
-    probs, caches = L_model_forward(X, parameters, last_layer_activation, down)
+    probs, caches = L_model_forward(X, parameters, inner_layer_activation, last_layer_activation, down, single_layer_training=False)
     
     if last_layer_activation == 'sigmoid':
     # convert probs to 0/1 predictions
