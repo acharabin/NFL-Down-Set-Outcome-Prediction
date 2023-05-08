@@ -61,9 +61,7 @@ The process used is as follows:
 3. Down 2 (layer 1) weights and bias terms are initialized with those estimated for down 3. 
 4. Steps 2 & 3 repeated until all parameters are initialized. 
 5. Absorption state 'from' weights are initialized with the identity matrix to indicate no further state transitions are possible. 
-6. The multi-layer model is trained using the initialized weights, predicting the absorption state for a set of downs at any down from 1 through 4. 
-
-The procedure can be repeated for further training, omitting steps 3 and 5. 
+6. The multi-layer model is trained using the initialized weights, predicting the absorption state for a set of downs starting at any down 1 through 4. 
 
 Mini-batch gradient descent is applied with a batch size of 128. 
 
