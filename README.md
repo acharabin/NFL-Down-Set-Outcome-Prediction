@@ -36,7 +36,7 @@ We then make 4 vertical stacks of this large feature vector and position them in
 
 ![image](./img/generalizedstates.png)
 
-The stacks will be consider as layers in a dense neural network. In the initial pass, a linear formula followed by a RELU activation will be used to map the current layers state to the probability* distribution of all states in the next layer (down). 
+The stacks will be consider as layers in a dense neural network. In the initial pass, a linear formula followed by a sigmoid activation will be used to map the current layers state to the probability distribution of all states in the next hidden layer (down). 
 
 Because an absorption state can occur in any down 1-4, absorption states will also be considered in the feature stack for layers 1-3. This means that the total number of dimensions in these stacks is 10 yardlines x 11 yeards to go + 1 time feature + 19 absorption states (130). You'll see that layer 0 represents the 1st down; this is because this stack is only used for input data and not for model computations which start in the 1st layer. 
 
@@ -52,16 +52,20 @@ The neural network including forward and backward propogation steps are built 'f
 
 ## Training Procedure
 
-A teacher-forcing procedure is used to ensure the model recognizes the intented state structure. The procedure is as follows:
+To initialize parameters for the cumulative model that predicts how the set of downs will end at any down, individual single-layer models are trained to predict the state of the next down. 
+
+The process used is as follows:
 
 1. Down 4 data is considered as input features and fed into the 3rd layer stack to predict the absorption probability distribution (layer 4).
-2. Down 3 data is considered as input features and fed into the 2nd layer stack to predict the absorption probability distribution (layer 4).
+2. Down 3 data is considered as input features and fed into the 2nd layer stack to predict the next down state probability distribution (layer 3).
 3. Down 2 (layer 1) weights and bias terms are initialized with those estimated for down 3. 
-4. Down 2 data is considered as input features and fed into the 1st layer stack to predict the absorption probability distribution (layer 4). 
-5. Down 1 (layer 0) weights and bias terms are initialized with those estimated for down 2. 
-6. Down 1 data is considered as input features and fed into the 0th layer stack to predict the absorption probability distribution (layer 4). 
+4. Steps 2 & 3 repeated until all parameters are initialized. 
+5. Absorption state 'from' weights are initialized with the identity matrix to indicate no further state transitions are possible. 
+6. The multi-layer model is trained using the initialized weights, predicting the absorption state for a set of downs at any down from 1 through 4. 
 
 The procedure can be repeated for further training, omitting steps 3 and 5. 
+
+Mini-batch gradient descent is applied with a batch size of 128. 
 
 ## Prediction Procedure
 
